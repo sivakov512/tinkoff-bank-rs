@@ -36,6 +36,10 @@ impl Client {
 pub enum AccessLevel {
     #[serde(rename = "ANONYMOUS")]
     Anonymous,
+    #[serde(rename = "CANDIDATE")]
+    Candidate,
+    #[serde(rename = "CLIENT")]
+    Client,
 }
 
 #[derive(Deserialize, Debug, PartialEq)]

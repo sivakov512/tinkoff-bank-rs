@@ -2,20 +2,45 @@ use httpmock::MockServer;
 use rstest::*;
 use tinkoff_bank_rs::{AccessLevel, Client, ResponsePayload, ResultCode, UserInfo};
 
+const ANONYMOUS: &str = "{\"resultCode\": \"OK\", \"payload\": {\"accessLevel\": \"ANONYMOUS\", \"unreadMessagesCount\": 0, \"userId\": \"1111\"}, \"trackingId\": \"AZAZA11\"}";
+const CANDIDATE: &str = "{\"resultCode\": \"OK\", \"payload\": {\"ssoId\": \"100-500-azaza-lolkek\", \"accessLevel\": \"CANDIDATE\", \"additionalAuth\": {\"needLogin\": false, \"needPassword\": true, \"needRegister\": false}, \"unreadMessagesCount\": 0, \"userId\": \"1234\"}, \"trackingId\": \"AZAZA11\"}";
+const CLIENT: &str = "{\"resultCode\": \"OK\", \"payload\": {\"ssoId\": \"100-500-azaza-lolkek\", \"accessLevel\": \"CLIENT\", \"unreadMessagesCount\": 0, \"userId\": \"1234\"}, \"trackingId\": \"AZAZA11\"}";
+
 #[fixture]
 fn server() -> MockServer {
     MockServer::start()
 }
 
-#[rstest]
+#[rstest(resp, expected,
+    case(
+        ANONYMOUS,
+        UserInfo {
+            access_level: AccessLevel::Anonymous,
+            user_id: "1111".to_owned(),
+        },
+    ),
+    case(
+        CANDIDATE,
+        UserInfo {
+            access_level: AccessLevel::Candidate,
+            user_id: "1234".to_owned(),
+        },
+    ),
+    case(
+        CLIENT,
+        UserInfo {
+            access_level: AccessLevel::Client,
+            user_id: "1234".to_owned(),
+        },
+    ),
+)]
 #[tokio::test]
-async fn returns_anonymous_user(server: MockServer) {
-    let _body = "{\"resultCode\": \"OK\", \"payload\": {\"accessLevel\": \"ANONYMOUS\", \"unreadMessagesCount\": 0, \"userId\": \"1111\"}, \"trackingId\": \"AZAZA11\"}";
+async fn returns_user_details(resp: &str, expected: UserInfo, server: MockServer) {
     server.mock(|when, then| {
         when.method(httpmock::Method::POST).path("/v1/ping");
         then.status(200)
             .header("Content-Type", "applucation/json")
-            .body(_body);
+            .body(resp);
     });
     let client = Client::new(&server.base_url());
 
@@ -25,10 +50,7 @@ async fn returns_anonymous_user(server: MockServer) {
         got,
         ResponsePayload {
             result_code: ResultCode::Ok,
-            payload: UserInfo {
-                access_level: AccessLevel::Anonymous,
-                user_id: "1111".to_owned()
-            }
+            payload: expected
         }
     )
 }
