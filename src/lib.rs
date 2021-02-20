@@ -21,10 +21,11 @@ impl Client {
         }
     }
 
-    pub async fn ping(&self) -> ResponsePayload<UserInfo> {
+    pub async fn ping(&self, session_id: &str) -> ResponsePayload<UserInfo> {
         let resp = self
             .client
             .post(&format!("{}/v1/ping", self.base_url))
+            .query(&[("sessionid", session_id)])
             .send()
             .await
             .unwrap();

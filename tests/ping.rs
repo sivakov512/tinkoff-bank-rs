@@ -44,7 +44,7 @@ async fn returns_user_details(resp: &str, expected: UserInfo, server: MockServer
     });
     let client = Client::new(&server.base_url());
 
-    let got = client.ping().await;
+    let got = client.ping("ultra-session-id").await;
 
     assert_eq!(
         got,
@@ -53,4 +53,22 @@ async fn returns_user_details(resp: &str, expected: UserInfo, server: MockServer
             payload: expected
         }
     )
+}
+
+#[rstest]
+#[tokio::test]
+async fn passes_session_id_as_query(server: MockServer) {
+    let mock = server.mock(|when, then| {
+        when.method(httpmock::Method::POST)
+            .path("/v1/ping")
+            .query_param("sessionid", "ultra-session-id");
+        then.status(200)
+            .header("Content-Type", "applucation/json")
+            .body(CLIENT);
+    });
+    let client = Client::new(&server.base_url());
+
+    client.ping("ultra-session-id").await;
+
+    mock.assert()
 }
