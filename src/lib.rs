@@ -1,6 +1,15 @@
 use serde::Deserialize;
 
 const API_URL: &str = "https://api.tinkoff.ru";
+const DEFAULT_PARAMS: [(&str, &str); 6] = [
+    ("appVersion", "5.5.1"),
+    ("connectionSubtype", "4G"),
+    ("appName", "mobile"),
+    ("origin", "mobile,ib5,loyalty,platform"),
+    ("connectionType", "Cellular"),
+    ("platform", "android"),
+    // pass device id too
+];
 
 pub struct Client {
     base_url: String,
@@ -22,24 +31,29 @@ impl Client {
     }
 
     pub async fn ping(&self, session_id: &str) -> ResponsePayload<UserInfo> {
-        let resp = self
-            .client
-            .post(&format!("{}/v1/ping", self.base_url))
-            .query(&[("sessionid", session_id)])
-            .send()
+        self.request("/v1/ping", &[("sessionid", session_id)])
             .await
-            .unwrap();
-        resp.json().await.unwrap()
+            .json()
+            .await
+            .unwrap()
     }
 
     pub async fn request_session(&self) -> ResponsePayload<Session> {
-        let resp = self
-            .client
-            .post(&format!("{}/v1/auth/session", self.base_url))
+        self.request("/v1/auth/session", &[])
+            .await
+            .json()
+            .await
+            .unwrap()
+    }
+
+    async fn request(&self, uri: &str, query_params: &[(&str, &str)]) -> reqwest::Response {
+        self.client
+            .post(&format!("{}{}", self.base_url, uri))
+            .query(&DEFAULT_PARAMS)
+            .query(query_params)
             .send()
             .await
-            .unwrap();
-        resp.json().await.unwrap()
+            .unwrap()
     }
 }
 
@@ -84,11 +98,65 @@ pub struct ResponsePayload<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use httpmock::MockServer;
+    use rstest::*;
+
+    #[fixture]
+    fn server() -> MockServer {
+        MockServer::start()
+    }
 
     #[test]
     fn uses_predefined_api_by_default() {
         let client = Client::default();
 
         assert_eq!(client.base_url, "https://api.tinkoff.ru");
+    }
+
+    #[rstest]
+    #[tokio::test]
+    async fn request_passes_default_params(server: MockServer) {
+        let mock = server.mock(|when, then| {
+            when.method(httpmock::Method::POST)
+                .path("/example")
+                .query_param("appVersion", "5.5.1")
+                .query_param("connectionSubtype", "4G")
+                .query_param("appName", "mobile")
+                .query_param("origin", "mobile,ib5,loyalty,platform")
+                .query_param("connectionType", "Cellular")
+                .query_param("platform", "android");
+            then.status(200);
+        });
+        let client = Client::new(&server.base_url());
+
+        client.request("/example", &[]).await;
+
+        mock.assert()
+    }
+
+    #[rstest]
+    #[tokio::test]
+    async fn request_passes_extra_params_also_if_provided(server: MockServer) {
+        let mock = server.mock(|when, then| {
+            when.method(httpmock::Method::POST)
+                .path("/example")
+                .query_param("appVersion", "5.5.1")
+                .query_param("connectionSubtype", "4G")
+                .query_param("appName", "mobile")
+                .query_param("origin", "mobile,ib5,loyalty,platform")
+                .query_param("connectionType", "Cellular")
+                .query_param("platform", "android")
+                // additional params
+                .query_param("key1", "val1")
+                .query_param("key2", "val2");
+            then.status(200);
+        });
+        let client = Client::new(&server.base_url());
+
+        client
+            .request("/example", &[("key1", "val1"), ("key2", "val2")])
+            .await;
+
+        mock.assert()
     }
 }
