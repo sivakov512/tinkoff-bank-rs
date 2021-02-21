@@ -31,6 +31,16 @@ impl Client {
             .unwrap();
         resp.json().await.unwrap()
     }
+
+    pub async fn request_session(&self) -> ResponsePayload<Session> {
+        let resp = self
+            .client
+            .post(&format!("{}/v1/auth/session", self.base_url))
+            .send()
+            .await
+            .unwrap();
+        resp.json().await.unwrap()
+    }
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
@@ -49,6 +59,13 @@ pub struct UserInfo {
     pub access_level: AccessLevel,
     #[serde(rename = "userId")]
     pub user_id: String,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct Session {
+    #[serde(rename = "sessionid")]
+    pub id: String,
+    pub ttl: u32,
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
