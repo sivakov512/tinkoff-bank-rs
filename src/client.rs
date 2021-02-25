@@ -42,6 +42,34 @@ impl Client {
             .unwrap()
     }
 
+    pub async fn auth_by_phone(&self, session_id: &str, phone: &str) -> ResponsePayload<Nothing> {
+        self.request_with_form(
+            "/v1/auth/by/phone",
+            &[("sessionid", session_id)],
+            &[("phone", phone)],
+        )
+        .await
+        .json()
+        .await
+        .unwrap()
+    }
+
+    async fn request_with_form(
+        &self,
+        uri: &str,
+        query: &[(&str, &str)],
+        form: &[(&str, &str)],
+    ) -> reqwest::Response {
+        self.client
+            .post(&format!("{}{}", self.base_url, uri))
+            .query(&DEFAULT_PARAMS)
+            .query(query)
+            .form(form)
+            .send()
+            .await
+            .unwrap()
+    }
+
     async fn request(&self, uri: &str, query_params: &[(&str, &str)]) -> reqwest::Response {
         self.client
             .post(&format!("{}{}", self.base_url, uri))
@@ -82,13 +110,25 @@ pub struct Session {
 pub enum ResultCode {
     #[serde(rename = "OK")]
     Ok,
+    #[serde(rename = "WAITING_CONFIRMATION")]
+    WaitingConfirmation,
 }
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct Nothing {}
 
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct ResponsePayload<T> {
     #[serde(rename = "resultCode")]
     pub result_code: ResultCode,
+    // exists for success response
     pub payload: Option<T>,
+    // exists if confirmation required
+    pub confirmations: Option<Vec<String>>,
+    #[serde(rename = "initialOperation")]
+    pub initial_operation: Option<String>,
+    #[serde(rename = "operationTicket")]
+    pub operation_ticket: Option<String>,
 }
 
 #[cfg(test)]

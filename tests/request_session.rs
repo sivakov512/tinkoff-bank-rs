@@ -34,7 +34,10 @@ async fn returns_session_details(server: MockServer) {
             payload: Some(Session {
                 id: "session-id-example".to_owned(),
                 ttl: 9994
-            })
+            }),
+            confirmations: None,
+            initial_operation: None,
+            operation_ticket: None,
         }
     )
 }
