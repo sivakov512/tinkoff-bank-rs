@@ -78,6 +78,22 @@ impl Client {
         .unwrap()
     }
 
+    pub async fn auth_by_password(
+        &self,
+        session_id: &str,
+        password: &str,
+    ) -> ResponsePayload<UserInfo> {
+        self.request(
+            "/v1/auth/by/password",
+            &[("sessionid", session_id)],
+            &[("password", password)],
+        )
+        .await
+        .json()
+        .await
+        .unwrap()
+    }
+
     async fn request(
         &self,
         uri: &str,
