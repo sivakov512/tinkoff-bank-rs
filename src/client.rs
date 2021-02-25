@@ -27,7 +27,7 @@ impl Client {
     }
 
     pub async fn ping(&self, session_id: &str) -> ResponsePayload<UserInfo> {
-        self.request("/v1/ping", &[("sessionid", session_id)])
+        self.request("/v1/ping", &[("sessionid", session_id)], &[])
             .await
             .json()
             .await
@@ -35,7 +35,7 @@ impl Client {
     }
 
     pub async fn request_session(&self) -> ResponsePayload<Session> {
-        self.request("/v1/auth/session", &[])
+        self.request("/v1/auth/session", &[], &[])
             .await
             .json()
             .await
@@ -43,7 +43,7 @@ impl Client {
     }
 
     pub async fn auth_by_phone(&self, session_id: &str, phone: &str) -> ResponsePayload<Nothing> {
-        self.request_with_form(
+        self.request(
             "/v1/auth/by/phone",
             &[("sessionid", session_id)],
             &[("phone", phone)],
@@ -54,7 +54,7 @@ impl Client {
         .unwrap()
     }
 
-    async fn request_with_form(
+    async fn request(
         &self,
         uri: &str,
         query: &[(&str, &str)],
@@ -65,16 +65,6 @@ impl Client {
             .query(&DEFAULT_PARAMS)
             .query(query)
             .form(form)
-            .send()
-            .await
-            .unwrap()
-    }
-
-    async fn request(&self, uri: &str, query_params: &[(&str, &str)]) -> reqwest::Response {
-        self.client
-            .post(&format!("{}{}", self.base_url, uri))
-            .query(&DEFAULT_PARAMS)
-            .query(query_params)
             .send()
             .await
             .unwrap()
@@ -169,14 +159,14 @@ mod tests {
             then.status(200);
         });
 
-        make_client(&server).request("/example", &[]).await;
+        make_client(&server).request("/example", &[], &[]).await;
 
         mock.assert()
     }
 
     #[rstest]
     #[tokio::test]
-    async fn request_passes_extra_params_also_if_provided(server: MockServer) {
+    async fn request_passes_query_params_also_if_provided(server: MockServer) {
         let mock = server.mock(|when, then| {
             when.method(httpmock::Method::POST)
                 .path("/example")
@@ -193,7 +183,31 @@ mod tests {
         });
 
         make_client(&server)
-            .request("/example", &[("key1", "val1"), ("key2", "val2")])
+            .request("/example", &[("key1", "val1"), ("key2", "val2")], &[])
+            .await;
+
+        mock.assert()
+    }
+
+    #[rstest]
+    #[tokio::test]
+    async fn request_passes_form_also_if_provided(server: MockServer) {
+        let mock = server.mock(|when, then| {
+            when.method(httpmock::Method::POST)
+                .path("/example")
+                .query_param("appVersion", "5.5.1")
+                .query_param("connectionSubtype", "4G")
+                .query_param("appName", "mobile")
+                .query_param("origin", "mobile,ib5,loyalty,platform")
+                .query_param("connectionType", "Cellular")
+                .query_param("platform", "android")
+                // additional params
+                .body("key1=val1&key2=val2");
+            then.status(200);
+        });
+
+        make_client(&server)
+            .request("/example", &[], &[("key1", "val1"), ("key2", "val2")])
             .await;
 
         mock.assert()
