@@ -54,6 +54,30 @@ impl Client {
         .unwrap()
     }
 
+    pub async fn confirm_auth_by_phone(
+        &self,
+        session_id: &str,
+        operation_ticket: &str,
+        sms_code: &str,
+    ) -> ResponsePayload<UserInfo> {
+        self.request(
+            "/v1/confirm",
+            &[("sessionid", session_id)],
+            &[
+                ("initialOperationTicket", operation_ticket),
+                ("initialOperation", "auth/by/phone"),
+                (
+                    "confirmationData",
+                    &serde_json::json!({ "SMSBYID": sms_code }).to_string(),
+                ),
+            ],
+        )
+        .await
+        .json()
+        .await
+        .unwrap()
+    }
+
     async fn request(
         &self,
         uri: &str,
