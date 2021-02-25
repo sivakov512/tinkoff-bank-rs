@@ -31,10 +31,10 @@ async fn returns_session_details(server: MockServer) {
         got,
         ResponsePayload {
             result_code: ResultCode::Ok,
-            payload: Session {
+            payload: Some(Session {
                 id: "session-id-example".to_owned(),
                 ttl: 9994
-            }
+            })
         }
     )
 }

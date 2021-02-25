@@ -55,7 +55,7 @@ async fn returns_user_details(resp: &str, expected: UserInfo, server: MockServer
         got,
         ResponsePayload {
             result_code: ResultCode::Ok,
-            payload: expected
+            payload: Some(expected)
         }
     )
 }

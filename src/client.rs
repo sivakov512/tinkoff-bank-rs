@@ -88,7 +88,7 @@ pub enum ResultCode {
 pub struct ResponsePayload<T> {
     #[serde(rename = "resultCode")]
     pub result_code: ResultCode,
-    pub payload: T,
+    pub payload: Option<T>,
 }
 
 #[cfg(test)]
