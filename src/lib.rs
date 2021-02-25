@@ -1,4 +1,6 @@
+#![allow(dead_code)]
 use serde::Deserialize;
+use uuid::Uuid;
 
 const API_URL: &str = "https://api.tinkoff.ru";
 const DEFAULT_PARAMS: [(&str, &str); 6] = [
@@ -14,6 +16,7 @@ const DEFAULT_PARAMS: [(&str, &str); 6] = [
 pub struct Client {
     base_url: String,
     client: reqwest::Client,
+    device_id: String,
 }
 
 impl Default for Client {
@@ -27,6 +30,7 @@ impl Client {
         Client {
             base_url: base_url.to_owned(),
             client: reqwest::Client::new(),
+            device_id: Uuid::new_v4().to_string(),
         }
     }
 
@@ -111,6 +115,14 @@ mod tests {
         let client = Client::default();
 
         assert_eq!(client.base_url, "https://api.tinkoff.ru");
+    }
+
+    #[test]
+    fn generates_random_device_id() {
+        let client1 = Client::default();
+        let client2 = Client::default();
+
+        assert_ne!(client1.device_id, client2.device_id);
     }
 
     #[rstest]
