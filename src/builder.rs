@@ -1,13 +1,7 @@
-#![allow(dead_code)]
+use crate::Client;
 use uuid::Uuid;
 
 const API_URL: &str = "https://api.tinkoff.ru";
-
-pub struct Client {
-    base_url: String,
-    device_id: String,
-    client: reqwest::Client,
-}
 
 pub struct ClientBuilder {
     base_url: String,
@@ -30,13 +24,15 @@ impl ClientBuilder {
             ..self
         }
     }
+    pub fn with_device_id(self, device_id: &str) -> Self {
+        ClientBuilder {
+            device_id: device_id.to_owned(),
+            ..self
+        }
+    }
 
     pub fn build(self) -> Client {
-        Client {
-            base_url: self.base_url,
-            device_id: self.device_id,
-            client: reqwest::Client::new(),
-        }
+        Client::new(self.base_url, self.device_id)
     }
 }
 
@@ -52,9 +48,35 @@ mod tests {
     }
 
     #[test]
+    fn creates_client_with_random_device_id_by_default() {
+        let client1 = ClientBuilder::default().build();
+        let client2 = ClientBuilder::default().build();
+
+        assert_ne!(client1.device_id, client2.device_id);
+    }
+
+    #[test]
     fn can_create_client_with_custom_url() {
         let client = ClientBuilder::default().with_url("http://lol.kek").build();
 
         assert_eq!(client.base_url, "http://lol.kek");
+    }
+
+    #[test]
+    fn can_create_client_with_custom_device_id() {
+        let client = ClientBuilder::default().with_device_id("lol-kek").build();
+
+        assert_eq!(client.device_id, "lol-kek");
+    }
+
+    #[test]
+    fn customize_everything() {
+        let client = ClientBuilder::default()
+            .with_url("http://lol.kek")
+            .with_device_id("lol-kek")
+            .build();
+
+        assert_eq!(client.base_url, "http://lol.kek");
+        assert_eq!(client.device_id, "lol-kek");
     }
 }
