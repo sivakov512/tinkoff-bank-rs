@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+pub mod builder;
+
 use serde::Deserialize;
 use uuid::Uuid;
 
