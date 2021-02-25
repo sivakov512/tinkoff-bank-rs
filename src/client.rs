@@ -103,6 +103,7 @@ impl Client {
         self.client
             .post(&format!("{}{}", self.base_url, uri))
             .query(&DEFAULT_PARAMS)
+            .query(&[("deviceId", &self.device_id)])
             .query(query)
             .form(form)
             .send()
@@ -196,6 +197,27 @@ mod tests {
                 .query_param("origin", "mobile,ib5,loyalty,platform")
                 .query_param("connectionType", "Cellular")
                 .query_param("platform", "android");
+            then.status(200);
+        });
+
+        make_client(&server).request("/example", &[], &[]).await;
+
+        mock.assert()
+    }
+
+    #[rstest]
+    #[tokio::test]
+    async fn request_passes_device_id_also(server: MockServer) {
+        let mock = server.mock(|when, then| {
+            when.method(httpmock::Method::POST)
+                .path("/example")
+                .query_param("appVersion", "5.5.1")
+                .query_param("connectionSubtype", "4G")
+                .query_param("appName", "mobile")
+                .query_param("origin", "mobile,ib5,loyalty,platform")
+                .query_param("connectionType", "Cellular")
+                .query_param("platform", "android")
+                .query_param("deviceId", "sample-device-id");
             then.status(200);
         });
 
