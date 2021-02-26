@@ -42,6 +42,9 @@ async fn main() {
             .await
     );
     dbg!(client.ping(&new_session_id).await);
+
+    print_section("List accounts");
+    dbg!(client.list_accounts(&new_session_id).await);
 }
 
 fn input(text: &str) -> String {

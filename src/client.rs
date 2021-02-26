@@ -127,6 +127,14 @@ impl Client {
         .unwrap()
     }
 
+    pub async fn list_accounts(&self, session_id: &str) -> ResponsePayload<Vec<Account>> {
+        self.request("/v1/accounts_flat", &[("sessionid", session_id)], &[])
+            .await
+            .json()
+            .await
+            .unwrap()
+    }
+
     async fn request(
         &self,
         uri: &str,
@@ -180,6 +188,30 @@ pub enum ResultCode {
 
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct Nothing {}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct Account {
+    #[serde(rename = "externalAccountNumber")]
+    pub external_number: String,
+    #[serde(rename = "accountGroup")]
+    pub group: String,
+    #[serde(rename = "moneyAmount")]
+    pub money_amount: MoneyAmount,
+    pub name: String,
+    pub id: String,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct MoneyAmount {
+    pub currency: Currency,
+    pub value: f32,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct Currency {
+    pub code: u32,
+    pub name: String,
+}
 
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct ResponsePayload<T> {
