@@ -1,5 +1,6 @@
 use std::io;
 use tinkoff_bank_rs::ClientBuilder;
+use uuid::Uuid;
 
 #[tokio::main]
 async fn main() {
@@ -28,6 +29,19 @@ async fn main() {
     let password = input("Enter your password: ");
     dbg!(client.auth_by_password(&session_id, &password).await);
     dbg!(client.ping(&session_id).await);
+
+    print_section("Set auth pin");
+    let auth_pin = Uuid::new_v4().to_string();
+    dbg!(client.set_auth_pin(&session_id, &auth_pin).await);
+
+    print_section("Auth by pin");
+    let new_session_id = dbg!(client.request_session().await).payload.unwrap().id;
+    dbg!(
+        client
+            .auth_by_pin(&new_session_id, &auth_pin, &session_id)
+            .await
+    );
+    dbg!(client.ping(&new_session_id).await);
 }
 
 fn input(text: &str) -> String {
