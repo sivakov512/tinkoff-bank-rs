@@ -3,4 +3,4 @@ mod builder;
 mod client;
 
 pub use builder::ClientBuilder;
-pub use client::{AccessLevel, Client, ResponsePayload, ResultCode, Session, UserInfo};
+pub use client::{AccessLevel, Client, Nothing, ResponsePayload, ResultCode, Session, UserInfo};

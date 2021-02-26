@@ -94,6 +94,18 @@ impl Client {
         .unwrap()
     }
 
+    pub async fn set_auth_pin(&self, session_id: &str, pin_hash: &str) -> ResponsePayload<Nothing> {
+        self.request(
+            "/v1/auth/pin/set",
+            &[("sessionid", session_id)],
+            &[("pinHash", pin_hash)],
+        )
+        .await
+        .json()
+        .await
+        .unwrap()
+    }
+
     async fn request(
         &self,
         uri: &str,
