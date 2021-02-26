@@ -106,6 +106,27 @@ impl Client {
         .unwrap()
     }
 
+    pub async fn auth_by_pin(
+        &self,
+        session_id: &str,
+        pin_hash: &str,
+        old_session_id: &str,
+    ) -> ResponsePayload<UserInfo> {
+        self.request(
+            "/v1/auth/by/pin",
+            &[("sessionid", session_id)],
+            &[
+                ("pinHash", pin_hash),
+                ("oldSessionId", old_session_id),
+                ("auth_type", "pin"),
+            ],
+        )
+        .await
+        .json()
+        .await
+        .unwrap()
+    }
+
     async fn request(
         &self,
         uri: &str,
@@ -138,7 +159,7 @@ pub enum AccessLevel {
 pub struct UserInfo {
     #[serde(rename = "accessLevel")]
     pub access_level: AccessLevel,
-    #[serde(rename = "userId")]
+    #[serde(default, rename = "userId")]
     pub user_id: String,
 }
 
