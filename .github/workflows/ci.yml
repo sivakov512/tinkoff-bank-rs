@@ -1,4 +1,4 @@
-name: test
+name: ci
 
 on: [push]
 
@@ -12,6 +12,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - id: get-date
+      run: echo "::set-output name=date::$(/bin/date -u "+%Y%W")"
+      shell: bash
+
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
+
     - run: cargo test --verbose
 
   lint:
@@ -20,5 +32,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - id: get-date
+      run: echo "::set-output name=date::$(/bin/date -u "+%Y%W")"
+      shell: bash
+
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
+
     - run: cargo fmt --all -- --check
+
     - run: cargo clippy -- -D warnings
