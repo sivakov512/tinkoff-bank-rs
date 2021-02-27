@@ -18,6 +18,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-testt-${{ hashFiles('**/Cargo.toml') }}
 
     - run: cargo test --verbose
 
@@ -26,6 +33,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-lintt-${{ hashFiles('**/Cargo.toml') }}
 
     - run: cargo fmt --all -- --check
     - run: cargo clippy -- -D warnings
