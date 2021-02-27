@@ -22,7 +22,8 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: ${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
+        key: ${{ github.ref }}-${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
+        restore-keys: refs/heads/master-${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
 
     - run: cargo test --verbose
 
@@ -42,7 +43,8 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: ${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
+        key: ${{ github.ref }}-${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
+        restore-keys: refs/heads/master-${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
 
     - run: cargo fmt --all -- --check
 
