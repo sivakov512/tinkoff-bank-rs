@@ -138,11 +138,16 @@ impl Client {
         &self,
         session_id: &str,
         account_id: &str,
+        start: u64,
+        end: u64,
     ) -> ResponsePayload<Vec<Operation>> {
+        let start = start.to_string();
+        let end = end.to_string();
+
         self.request(
             "/v1/operations",
             &[("sessionid", session_id)],
-            &[("account", account_id)],
+            &[("account", account_id), ("start", &start), ("end", &end)],
         )
         .await
         .json()
