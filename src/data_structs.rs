@@ -96,6 +96,11 @@ pub struct Merchant {
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
+pub struct Subgroup {
+    pub name: String,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
 pub enum OperationGroup {
     #[serde(rename = "PAY")]
     Pay,
@@ -107,6 +112,8 @@ pub enum OperationGroup {
     Cash,
     #[serde(rename = "CORRECTION")]
     Correction,
+    #[serde(rename = "CHARGE")]
+    Charge,
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
@@ -122,7 +129,9 @@ pub struct Operation {
     pub spending_category: Category,
     pub mcc: u16,
     pub category: Category,
+    pub subcategory: Option<String>,
     pub account: String,
     pub merchant: Option<Merchant>,
     pub group: OperationGroup,
+    pub subgroup: Option<Subgroup>,
 }

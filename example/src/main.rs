@@ -52,7 +52,7 @@ async fn main() {
     print_section("List operations");
     dbg!(
         client
-            .list_operations(&new_session_id, &account.id, 1612137600000, 1612656000000)
+            .list_operations(&new_session_id, &account.id, 1612137600000, 1614470400000)
             .await
     );
 }
