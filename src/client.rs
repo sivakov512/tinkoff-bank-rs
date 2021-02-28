@@ -134,6 +134,22 @@ impl Client {
             .unwrap()
     }
 
+    pub async fn list_operations(
+        &self,
+        session_id: &str,
+        account_id: &str,
+    ) -> ResponsePayload<Vec<Operation>> {
+        self.request(
+            "/v1/operations",
+            &[("sessionid", session_id)],
+            &[("account", account_id)],
+        )
+        .await
+        .json()
+        .await
+        .unwrap()
+    }
+
     async fn request(
         &self,
         uri: &str,

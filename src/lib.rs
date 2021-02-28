@@ -6,6 +6,6 @@ mod data_structs;
 pub use builder::ClientBuilder;
 pub use client::Client;
 pub use data_structs::{
-    AccessLevel, Account, Currency, MoneyAmount, Nothing, ResponsePayload, ResultCode, Session,
-    UserInfo,
+    AccessLevel, Account, Category, Currency, Merchant, MoneyAmount, Nothing, Operation,
+    OperationGroup, OperationTime, OperationType, ResponsePayload, ResultCode, Session, UserInfo,
 };
