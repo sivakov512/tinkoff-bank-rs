@@ -7,5 +7,6 @@ pub use builder::ClientBuilder;
 pub use client::Client;
 pub use data_structs::{
     AccessLevel, Account, Category, Currency, Merchant, MoneyAmount, Nothing, Operation,
-    OperationGroup, OperationTime, OperationType, ResponsePayload, ResultCode, Session, UserInfo,
+    OperationGroup, OperationTime, OperationType, ResponsePayload, ResultCode, Session, Subgroup,
+    UserInfo,
 };
