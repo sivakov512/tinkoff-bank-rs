@@ -62,7 +62,7 @@ async fn returns_operations(server: MockServer) {
     });
 
     let got = make_client(&server)
-        .list_operations("ultra-session-id", "100")
+        .list_operations("ultra-session-id", "100", 1234567890123, 1234567990123)
         .await;
 
     assert_eq!(
@@ -105,19 +105,19 @@ async fn returns_operations(server: MockServer) {
 
 #[rstest]
 #[tokio::test]
-async fn passes_session_id_and_account(server: MockServer) {
+async fn passes_session_id_and_params(server: MockServer) {
     let mock = server.mock(|when, then| {
         when.method(httpmock::Method::POST)
             .path("/v1/operations")
             .query_param("sessionid", "ultra-session-id")
-            .body("account=100");
+            .body("account=100&start=1234567890123&end=1234567990123");
         then.status(200)
             .header("Content-Type", "applucation/json")
             .body(RESPONSE);
     });
 
     make_client(&server)
-        .list_operations("ultra-session-id", "100")
+        .list_operations("ultra-session-id", "100", 1234567890123, 1234567990123)
         .await;
 
     mock.assert()
