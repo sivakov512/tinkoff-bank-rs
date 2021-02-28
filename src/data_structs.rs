@@ -123,6 +123,6 @@ pub struct Operation {
     pub mcc: u16,
     pub category: Category,
     pub account: String,
-    pub merchant: Merchant,
+    pub merchant: Option<Merchant>,
     pub group: OperationGroup,
 }
