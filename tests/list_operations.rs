@@ -1,8 +1,8 @@
 use httpmock::MockServer;
 use rstest::*;
 use tinkoff_bank_rs::{
-    Category, Client, ClientBuilder, Currency, Merchant, MoneyAmount, Operation, OperationGroup,
-    OperationTime, OperationType, ResponsePayload, ResultCode, Subgroup,
+    Client, ClientBuilder, Currency, MoneyAmount, Operation, OperationGroup, OperationTime,
+    OperationType, ResponsePayload, ResultCode,
 };
 
 #[fixture]
@@ -33,18 +33,12 @@ fn make_client(server: &MockServer) -> Client {
         operation_time: OperationTime {
             milliseconds: 1613639239000
         },
-        spending_category: Category {
-            name: "Рестораны".to_owned(),
-        },
+        spending_category: "Рестораны".to_owned(),
         mcc: 5812,
-        category: Category {
-            name: "Рестораны".to_owned(),
-        },
+        category: "Рестораны".to_owned(),
         subcategory: None,
         account: "100".to_owned(),
-        merchant: Some(Merchant {
-            name: "Яндекс.Еда".to_owned()
-        }),
+        merchant: Some("Яндекс.Еда".to_owned()),
         group: OperationGroup::Pay,
         subgroup: None,
     }),
@@ -62,20 +56,14 @@ fn make_client(server: &MockServer) -> Client {
         operation_time: OperationTime {
             milliseconds: 1613168606000
         },
-        spending_category: Category {
-            name: "Интернет".to_owned(),
-        },
+        spending_category: "Интернет".to_owned(),
         mcc: 2,
-        category: Category {
-            name: "Интернет, voip/иб".to_owned(),
-        },
+        category: "Интернет, voip/иб".to_owned(),
         subcategory: Some("Онлайм".to_owned()),
         account: "100".to_owned(),
         merchant: None,
         group: OperationGroup::Pay,
-        subgroup: Some(Subgroup {
-            name: "".to_owned(),
-        }),
+        subgroup: Some("".to_owned()),
     }),
     case(RESPONSE_3, Operation {
         id: "1234567892".to_owned(),
@@ -91,20 +79,14 @@ fn make_client(server: &MockServer) -> Client {
         operation_time: OperationTime {
             milliseconds: 1612978599000
         },
-        spending_category: Category {
-            name: "Пополнения".to_owned(),
-        },
+        spending_category: "Пополнения".to_owned(),
         mcc: 0,
-        category: Category {
-            name: "Другое".to_owned(),
-        },
+        category: "Другое".to_owned(),
         subcategory: Some("Иванов И.".to_owned()),
         account: "100".to_owned(),
         merchant: None,
         group: OperationGroup::Income,
-        subgroup: Some(Subgroup {
-            name: "Пополнение по номеру телефона".to_owned(),
-        }),
+        subgroup: Some("Пополнение по номеру телефона".to_owned()),
     }),
 )]
 #[tokio::test]

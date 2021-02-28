@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 
 #[derive(Deserialize, Debug, PartialEq)]
 pub enum AccessLevel {
@@ -86,21 +86,6 @@ pub struct OperationTime {
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
-pub struct Category {
-    pub name: String,
-}
-
-#[derive(Deserialize, Debug, PartialEq)]
-pub struct Merchant {
-    pub name: String,
-}
-
-#[derive(Deserialize, Debug, PartialEq)]
-pub struct Subgroup {
-    pub name: String,
-}
-
-#[derive(Deserialize, Debug, PartialEq)]
 pub enum OperationGroup {
     #[serde(rename = "PAY")]
     Pay,
@@ -116,22 +101,74 @@ pub enum OperationGroup {
     Charge,
 }
 
-#[derive(Deserialize, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct Operation {
     pub id: String,
-    #[serde(rename = "type")]
     pub operation_type: OperationType,
     pub description: String,
     pub amount: MoneyAmount,
-    #[serde(rename = "operationTime")]
     pub operation_time: OperationTime,
-    #[serde(rename = "spendingCategory")]
-    pub spending_category: Category,
+    pub spending_category: String,
     pub mcc: u16,
-    pub category: Category,
+    pub category: String,
     pub subcategory: Option<String>,
     pub account: String,
-    pub merchant: Option<Merchant>,
+    pub merchant: Option<String>,
     pub group: OperationGroup,
-    pub subgroup: Option<Subgroup>,
+    pub subgroup: Option<String>,
+}
+
+impl<'de> Deserialize<'de> for Operation {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        struct Outer {
+            id: String,
+            #[serde(rename = "type")]
+            operation_type: OperationType,
+            description: String,
+            amount: MoneyAmount,
+            #[serde(rename = "operationTime")]
+            operation_time: OperationTime,
+            #[serde(rename = "spendingCategory")]
+            spending_category: InnerName,
+            mcc: u16,
+            category: InnerName,
+            subcategory: Option<String>,
+            account: String,
+            merchant: Option<InnerName>,
+            group: OperationGroup,
+            subgroup: Option<InnerName>,
+        }
+
+        #[derive(Deserialize)]
+        struct InnerName {
+            name: String,
+        }
+
+        let helper = Outer::deserialize(deserializer)?;
+        Ok(Operation {
+            id: helper.id,
+            operation_type: helper.operation_type,
+            description: helper.description,
+            amount: helper.amount,
+            operation_time: helper.operation_time,
+            spending_category: helper.spending_category.name,
+            mcc: helper.mcc,
+            category: helper.category.name,
+            subcategory: helper.subcategory,
+            account: helper.account,
+            merchant: match helper.merchant {
+                Some(val) => Some(val.name),
+                None => None,
+            },
+            group: helper.group,
+            subgroup: match helper.subgroup {
+                Some(val) => Some(val.name),
+                None => None,
+            },
+        })
+    }
 }
