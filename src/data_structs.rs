@@ -54,10 +54,34 @@ pub struct MoneyAmount {
     pub value: f32,
 }
 
-#[derive(Deserialize, Debug, PartialEq)]
-pub struct Currency {
-    pub code: u32,
-    pub name: String,
+#[derive(Debug, PartialEq)]
+pub enum Currency {
+    RUB,
+    USD,
+}
+
+impl<'de> Deserialize<'de> for Currency {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        struct Outer {
+            name: Inner,
+        }
+
+        #[derive(Deserialize)]
+        enum Inner {
+            RUB,
+            USD,
+        }
+
+        let helper = Outer::deserialize(deserializer)?;
+        Ok(match helper.name {
+            Inner::RUB => Currency::RUB,
+            Inner::USD => Currency::USD,
+        })
+    }
 }
 
 #[derive(Deserialize, Debug, PartialEq)]

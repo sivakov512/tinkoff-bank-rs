@@ -24,10 +24,7 @@ fn make_client(server: &MockServer) -> Client {
         operation_type: OperationType::Credit,
         description: "Яндекс.Еда".to_owned(),
         amount: MoneyAmount {
-            currency: Currency {
-                code: 643,
-                name: "RUB".to_owned()
-            },
+            currency: Currency::RUB,
             value: 1234.5
         },
         operation_time: OperationTime {
@@ -47,10 +44,7 @@ fn make_client(server: &MockServer) -> Client {
         operation_type: OperationType::Debit,
         description: "Онлайм".to_owned(),
         amount: MoneyAmount {
-            currency: Currency {
-                code: 643,
-                name: "RUB".to_owned()
-            },
+            currency: Currency::RUB,
             value: 100.0
         },
         operation_time: OperationTime {
@@ -70,10 +64,7 @@ fn make_client(server: &MockServer) -> Client {
         operation_type: OperationType::Credit,
         description: "Иванов И.".to_owned(),
         amount: MoneyAmount {
-            currency: Currency {
-                code: 643,
-                name: "RUB".to_owned()
-            },
+            currency: Currency::RUB,
             value: 9999.0
         },
         operation_time: OperationTime {

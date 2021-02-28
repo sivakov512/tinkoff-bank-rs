@@ -39,10 +39,7 @@ async fn returns_accounts(server: MockServer) {
                     external_number: "100000".to_owned(),
                     group: "Дебетовые карты".to_owned(),
                     money_amount: MoneyAmount {
-                        currency: Currency {
-                            code: 643,
-                            name: "RUB".to_owned()
-                        },
+                        currency: Currency::RUB,
                         value: 1111.11
                     },
                     name: "Счет Tinkoff Black BE".to_owned(),
@@ -52,10 +49,7 @@ async fn returns_accounts(server: MockServer) {
                     external_number: "200000".to_owned(),
                     group: "Дебетовые карты".to_owned(),
                     money_amount: MoneyAmount {
-                        currency: Currency {
-                            code: 840,
-                            name: "USD".to_owned()
-                        },
+                        currency: Currency::USD,
                         value: 22222.2
                     },
                     name: "Счет USD Tinkoff Black".to_owned(),
@@ -65,10 +59,7 @@ async fn returns_accounts(server: MockServer) {
                     external_number: "300000".to_owned(),
                     group: "Накопительные счета".to_owned(),
                     money_amount: MoneyAmount {
-                        currency: Currency {
-                            code: 643,
-                            name: "RUB".to_owned()
-                        },
+                        currency: Currency::RUB,
                         value: 333333.0
                     },
                     name: "Классный счет".to_owned(),
