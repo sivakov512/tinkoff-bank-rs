@@ -44,7 +44,17 @@ async fn main() {
     dbg!(client.ping(&new_session_id).await);
 
     print_section("List accounts");
-    dbg!(client.list_accounts(&new_session_id).await);
+    let accounts = dbg!(client.list_accounts(&new_session_id).await)
+        .payload
+        .unwrap();
+    let account = &accounts[0];
+
+    print_section("List operations");
+    dbg!(
+        client
+            .list_operations(&new_session_id, &account.id, 1612137600000, 1612656000000)
+            .await
+    );
 }
 
 fn input(text: &str) -> String {
