@@ -73,3 +73,56 @@ pub struct ResponsePayload<T> {
     #[serde(rename = "operationTicket")]
     pub operation_ticket: Option<String>,
 }
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub enum OperationType {
+    Credit,
+    Debit,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct OperationTime {
+    pub milliseconds: u64,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct Category {
+    pub name: String,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct Merchant {
+    pub name: String,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub enum OperationGroup {
+    #[serde(rename = "PAY")]
+    Pay,
+    #[serde(rename = "INCOME")]
+    Income,
+    #[serde(rename = "TRANSFER")]
+    Transfer,
+    #[serde(rename = "CASH")]
+    Cash,
+    #[serde(rename = "CORRECTION")]
+    Correction,
+}
+
+#[derive(Deserialize, Debug, PartialEq)]
+pub struct Operation {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub operation_type: OperationType,
+    pub description: String,
+    pub amount: MoneyAmount,
+    #[serde(rename = "operationTime")]
+    pub operation_time: OperationTime,
+    #[serde(rename = "spendingCategory")]
+    pub spending_category: Category,
+    pub mcc: u16,
+    pub category: Category,
+    pub account: String,
+    pub merchant: Merchant,
+    pub group: OperationGroup,
+}
