@@ -1,4 +1,5 @@
 use crate::data_structs::*;
+use chrono::{DateTime, Utc};
 
 const DEFAULT_PARAMS: [(&str, &str); 6] = [
     ("appVersion", "5.5.1"),
@@ -138,11 +139,11 @@ impl Client {
         &self,
         session_id: &str,
         account_id: &str,
-        start: u64,
-        end: u64,
+        start: DateTime<Utc>,
+        end: DateTime<Utc>,
     ) -> ResponsePayload<Vec<Operation>> {
-        let start = start.to_string();
-        let end = end.to_string();
+        let start = start.timestamp_millis().to_string();
+        let end = end.timestamp_millis().to_string();
 
         self.request(
             "/v1/operations",

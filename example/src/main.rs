@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use std::io;
 use tinkoff_bank_rs::ClientBuilder;
 use uuid::Uuid;
@@ -52,7 +53,12 @@ async fn main() {
     print_section("List operations");
     dbg!(
         client
-            .list_operations(&new_session_id, &account.id, 1612137600000, 1614470400000)
+            .list_operations(
+                &new_session_id,
+                &account.id,
+                dt("2021-02-01T00:00:00Z"),
+                dt("2021-02-28T00:00:00Z")
+            )
             .await
     );
 }
@@ -69,4 +75,8 @@ fn input(text: &str) -> String {
 fn print_section(text: &str) {
     println!("\n");
     println!("{}\n======", text);
+}
+
+fn dt(value: &str) -> DateTime<Utc> {
+    value.parse::<DateTime<Utc>>().unwrap()
 }
