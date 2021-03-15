@@ -17,6 +17,10 @@ fn make_client(server: &MockServer) -> Client {
         .build()
 }
 
+fn dt(value: &str) -> DateTime<Utc> {
+    value.parse::<DateTime<Utc>>().unwrap()
+}
+
 #[rstest(
     response,
     expected,
@@ -85,7 +89,12 @@ async fn returns_operations(response: &str, expected: Operation, server: MockSer
     });
 
     let got = make_client(&server)
-        .list_operations("ultra-session-id", "100", 1234567890123, 1234567990123)
+        .list_operations(
+            "ultra-session-id",
+            "100",
+            dt("2009-02-13T23:31:30Z"),
+            dt("2009-02-13T23:33:10Z"),
+        )
         .await;
 
     assert_eq!(
@@ -107,14 +116,19 @@ async fn passes_session_id_and_params(server: MockServer) {
         when.method(httpmock::Method::POST)
             .path("/v1/operations")
             .query_param("sessionid", "ultra-session-id")
-            .body("account=100&start=1234567890123&end=1234567990123");
+            .body("account=100&start=1234567890000&end=1234567990000");
         then.status(200)
             .header("Content-Type", "applucation/json")
             .body(RESPONSE_1);
     });
 
     make_client(&server)
-        .list_operations("ultra-session-id", "100", 1234567890123, 1234567990123)
+        .list_operations(
+            "ultra-session-id",
+            "100",
+            dt("2009-02-13T23:31:30Z"),
+            dt("2009-02-13T23:33:10Z"),
+        )
         .await;
 
     mock.assert()
