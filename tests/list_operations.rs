@@ -1,8 +1,9 @@
+use chrono::{DateTime, Utc};
 use httpmock::MockServer;
 use rstest::*;
 use tinkoff_bank_rs::{
-    Client, ClientBuilder, Currency, MoneyAmount, Operation, OperationGroup, OperationTime,
-    OperationType, ResponsePayload, ResultCode,
+    Client, ClientBuilder, Currency, MoneyAmount, Operation, OperationGroup, OperationType,
+    ResponsePayload, ResultCode,
 };
 
 #[fixture]
@@ -27,9 +28,7 @@ fn make_client(server: &MockServer) -> Client {
             currency: Currency::RUB,
             value: 1234.5
         },
-        operation_time: OperationTime {
-            milliseconds: 1613639239000
-        },
+        operation_time: "2021-02-18T09:07:19Z".parse::<DateTime<Utc>>().unwrap(),
         spending_category: "Рестораны".to_owned(),
         mcc: 5812,
         category: "Рестораны".to_owned(),
@@ -47,9 +46,7 @@ fn make_client(server: &MockServer) -> Client {
             currency: Currency::RUB,
             value: 100.0
         },
-        operation_time: OperationTime {
-            milliseconds: 1613168606000
-        },
+        operation_time: "2021-02-12T22:23:26Z".parse::<DateTime<Utc>>().unwrap(),
         spending_category: "Интернет".to_owned(),
         mcc: 2,
         category: "Интернет, voip/иб".to_owned(),
@@ -67,9 +64,7 @@ fn make_client(server: &MockServer) -> Client {
             currency: Currency::RUB,
             value: 9999.0
         },
-        operation_time: OperationTime {
-            milliseconds: 1612978599000
-        },
+        operation_time: "2021-02-10T17:36:39Z".parse::<DateTime<Utc>>().unwrap(),
         spending_category: "Пополнения".to_owned(),
         mcc: 0,
         category: "Другое".to_owned(),
