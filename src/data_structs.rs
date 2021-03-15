@@ -1,3 +1,4 @@
+use chrono::{serde::ts_milliseconds, DateTime, Utc};
 use serde::{Deserialize, Deserializer};
 
 #[derive(Deserialize, Debug, PartialEq)]
@@ -105,11 +106,6 @@ pub enum OperationType {
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
-pub struct OperationTime {
-    pub milliseconds: u64,
-}
-
-#[derive(Deserialize, Debug, PartialEq)]
 pub enum OperationGroup {
     #[serde(rename = "PAY")]
     Pay,
@@ -131,7 +127,7 @@ pub struct Operation {
     pub operation_type: OperationType,
     pub description: String,
     pub amount: MoneyAmount,
-    pub operation_time: OperationTime,
+    pub operation_time: DateTime<Utc>,
     pub spending_category: String,
     pub mcc: u16,
     pub category: String,
@@ -155,7 +151,7 @@ impl<'de> Deserialize<'de> for Operation {
             description: String,
             amount: MoneyAmount,
             #[serde(rename = "operationTime")]
-            operation_time: OperationTime,
+            operation_time: InnerTime,
             #[serde(rename = "spendingCategory")]
             spending_category: InnerName,
             mcc: u16,
@@ -172,13 +168,19 @@ impl<'de> Deserialize<'de> for Operation {
             name: String,
         }
 
+        #[derive(Deserialize)]
+        struct InnerTime {
+            #[serde(with = "ts_milliseconds")]
+            milliseconds: DateTime<Utc>,
+        }
+
         let helper = Outer::deserialize(deserializer)?;
         Ok(Operation {
             id: helper.id,
             operation_type: helper.operation_type,
             description: helper.description,
             amount: helper.amount,
-            operation_time: helper.operation_time,
+            operation_time: helper.operation_time.milliseconds,
             spending_category: helper.spending_category.name,
             mcc: helper.mcc,
             category: helper.category.name,
