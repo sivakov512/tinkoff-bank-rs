@@ -119,6 +119,8 @@ pub enum OperationGroup {
     Correction,
     #[serde(rename = "CHARGE")]
     Charge,
+    #[serde(rename = "INTERNAL")]
+    Internal,
 }
 
 #[derive(Debug, PartialEq)]
