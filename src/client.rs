@@ -13,7 +13,7 @@ const DEFAULT_PARAMS: [(&str, &str); 6] = [
 
 pub struct Client {
     pub(crate) base_url: String,
-    pub(crate) device_id: String,
+    pub device_id: String,
     client: reqwest::Client,
 }
 
