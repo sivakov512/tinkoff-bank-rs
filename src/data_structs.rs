@@ -61,6 +61,7 @@ pub enum Currency {
     EUR,
     RUB,
     USD,
+    BYN,
 }
 
 impl<'de> Deserialize<'de> for Currency {
@@ -79,6 +80,7 @@ impl<'de> Deserialize<'de> for Currency {
             RUB,
             USD,
             EUR,
+            BYN,
         }
 
         let helper = Outer::deserialize(deserializer)?;
@@ -86,6 +88,7 @@ impl<'de> Deserialize<'de> for Currency {
             Inner::RUB => Currency::RUB,
             Inner::USD => Currency::USD,
             Inner::EUR => Currency::EUR,
+            Inner::BYN => Currency::BYN,
         })
     }
 }
