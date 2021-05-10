@@ -134,6 +134,7 @@ pub struct Operation {
     pub operation_type: OperationType,
     pub description: String,
     pub amount: MoneyAmount,
+    pub account_amount: MoneyAmount,
     pub operation_time: DateTime<Utc>,
     pub spending_category: String,
     pub mcc: u16,
@@ -157,6 +158,8 @@ impl<'de> Deserialize<'de> for Operation {
             operation_type: OperationType,
             description: String,
             amount: MoneyAmount,
+            #[serde(rename = "accountAmount")]
+            account_amount: MoneyAmount,
             #[serde(rename = "operationTime")]
             operation_time: InnerTime,
             #[serde(rename = "spendingCategory")]
@@ -187,6 +190,7 @@ impl<'de> Deserialize<'de> for Operation {
             operation_type: helper.operation_type,
             description: helper.description,
             amount: helper.amount,
+            account_amount: helper.account_amount,
             operation_time: helper.operation_time.milliseconds,
             spending_category: helper.spending_category.name,
             mcc: helper.mcc,
