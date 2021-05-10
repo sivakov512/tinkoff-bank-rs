@@ -55,8 +55,10 @@ pub struct MoneyAmount {
     pub value: f32,
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, PartialEq)]
 pub enum Currency {
+    EUR,
     RUB,
     USD,
 }
@@ -71,16 +73,19 @@ impl<'de> Deserialize<'de> for Currency {
             name: Inner,
         }
 
+        #[allow(clippy::upper_case_acronyms)]
         #[derive(Deserialize)]
         enum Inner {
             RUB,
             USD,
+            EUR,
         }
 
         let helper = Outer::deserialize(deserializer)?;
         Ok(match helper.name {
             Inner::RUB => Currency::RUB,
             Inner::USD => Currency::USD,
+            Inner::EUR => Currency::EUR,
         })
     }
 }
