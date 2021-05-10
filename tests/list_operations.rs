@@ -32,6 +32,10 @@ fn dt(value: &str) -> DateTime<Utc> {
             currency: Currency::RUB,
             value: 1234.5
         },
+        account_amount: MoneyAmount {
+            currency: Currency::RUB,
+            value: 1234.5
+        },
         operation_time: "2021-02-18T09:07:19Z".parse::<DateTime<Utc>>().unwrap(),
         spending_category: "Рестораны".to_owned(),
         mcc: 5812,
@@ -50,6 +54,10 @@ fn dt(value: &str) -> DateTime<Utc> {
             currency: Currency::RUB,
             value: 100.0
         },
+        account_amount: MoneyAmount {
+            currency: Currency::RUB,
+            value: 100.0
+        },
         operation_time: "2021-02-12T22:23:26Z".parse::<DateTime<Utc>>().unwrap(),
         spending_category: "Интернет".to_owned(),
         mcc: 2,
@@ -65,8 +73,12 @@ fn dt(value: &str) -> DateTime<Utc> {
         operation_type: OperationType::Credit,
         description: "Иванов И.".to_owned(),
         amount: MoneyAmount {
+            currency: Currency::USD,
+            value: 2.0
+        },
+        account_amount: MoneyAmount {
             currency: Currency::RUB,
-            value: 9999.0
+            value: 145.3
         },
         operation_time: "2021-02-10T17:36:39Z".parse::<DateTime<Utc>>().unwrap(),
         spending_category: "Пополнения".to_owned(),
@@ -145,6 +157,10 @@ const RESPONSE_1: &str = "{
                 \"currency\": {\"code\": 643, \"name\": \"RUB\", \"strCode\": \"643\"},
                 \"value\": 1234.50
             },
+            \"accountAmount\": {
+                \"currency\": {\"code\": 643, \"name\": \"RUB\", \"strCode\": \"643\"},
+                \"value\": 1234.50
+            },
             \"operationTime\": {\"milliseconds\": 1613639239000},
             \"spendingCategory\": {
                 \"id\": \"24\",
@@ -197,6 +213,10 @@ const RESPONSE_2: &str = "{
                 \"currency\": {\"code\": 643, \"name\": \"RUB\", \"strCode\": \"643\"},
                 \"value\": 100.0
             },
+            \"accountAmount\": {
+                \"currency\": {\"code\": 643, \"name\": \"RUB\", \"strCode\": \"643\"},
+                \"value\": 100.0
+            },
             \"operationTime\": {\"milliseconds\": 1613168606000},
             \"subcategory\": \"Онлайм\",
             \"spendingCategory\": {
@@ -231,8 +251,12 @@ const RESPONSE_3: &str = "{
             \"description\": \"Иванов И.\",
             \"senderDetails\": \"Иванов И.\",
             \"amount\": {
+                \"currency\": {\"code\": 840, \"name\": \"USD\", \"strCode\": \"840\"},
+                \"value\": 2.0
+            },
+            \"accountAmount\": {
                 \"currency\": {\"code\": 643, \"name\": \"RUB\", \"strCode\": \"643\"},
-                \"value\": 9999.0
+                \"value\": 145.3
             },
             \"operationTime\": {\"milliseconds\": 1612978599000},
             \"subcategory\": \"Иванов И.\",
