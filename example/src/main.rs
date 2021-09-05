@@ -1,12 +1,12 @@
 use chrono::{DateTime, Utc};
 use std::io;
-use tinkoff_bank::ClientBuilder;
+use tinkoff_bank::Client;
 use uuid::Uuid;
 
 #[tokio::main]
 async fn main() {
     let device_id = Uuid::new_v4().to_string();
-    let client = ClientBuilder::default().build();
+    let client = Client::default();
 
     print_section("Request session");
     let session = dbg!(client.request_session(&device_id).await);

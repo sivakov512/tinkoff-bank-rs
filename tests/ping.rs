@@ -1,6 +1,6 @@
 use httpmock::MockServer;
 use rstest::*;
-use tinkoff_bank::{AccessLevel, Client, ClientBuilder, ResponsePayload, ResultCode, UserInfo};
+use tinkoff_bank::{AccessLevel, Client, ResponsePayload, ResultCode, UserInfo};
 
 const ANONYMOUS: &str = "{\"resultCode\": \"OK\", \"payload\": {\"accessLevel\": \"ANONYMOUS\", \"unreadMessagesCount\": 0, \"userId\": \"1111\"}, \"trackingId\": \"AZAZA11\"}";
 const CANDIDATE: &str = "{\"resultCode\": \"OK\", \"payload\": {\"ssoId\": \"100-500-azaza-lolkek\", \"accessLevel\": \"CANDIDATE\", \"additionalAuth\": {\"needLogin\": false, \"needPassword\": true, \"needRegister\": false}, \"unreadMessagesCount\": 0, \"userId\": \"1234\"}, \"trackingId\": \"AZAZA11\"}";
@@ -12,9 +12,7 @@ fn server() -> MockServer {
 }
 
 fn make_client(server: &MockServer) -> Client {
-    ClientBuilder::default()
-        .with_url(&server.base_url())
-        .build()
+    Client::new(&server.base_url())
 }
 
 #[rstest(resp, expected,

@@ -1,8 +1,6 @@
 use httpmock::MockServer;
 use rstest::*;
-use tinkoff_bank::{
-    Account, Client, ClientBuilder, Currency, MoneyAmount, ResponsePayload, ResultCode,
-};
+use tinkoff_bank::{Account, Client, Currency, MoneyAmount, ResponsePayload, ResultCode};
 
 const RESPONSE: &str = "{\"payload\": [{\"externalAccountNumber\": \"100000\", \"accountGroup\": \"Дебетовые карты\", \"moneyAmount\": {\"currency\": {\"code\": 643, \"name\": \"RUB\", \"strCode\": \"643\"}, \"value\": 1111.11}, \"currency\": {\"code\": 643, \"name\": \"RUB\", \"strCode\": \"643\"}, \"name\": \"Счет Tinkoff Black BE\", \"id\": \"100\"}, {\"externalAccountNumber\": \"200000\", \"accountGroup\": \"Дебетовые карты\", \"moneyAmount\": {\"currency\": {\"code\": 840, \"name\": \"USD\", \"strCode\": \"840\"}, \"value\": 22222.2}, \"currency\": {\"code\": 840, \"name\": \"USD\", \"strCode\": \"840\"}, \"name\": \"Счет USD Tinkoff Black\", \"id\": \"200\"}, {\"externalAccountNumber\": \"300000\", \"accountGroup\": \"Накопительные счета\", \"moneyAmount\": {\"currency\": {\"code\": 643, \"name\": \"RUB\", \"strCode\": \"643\"}, \"value\": 333333}, \"currency\": {\"code\": 643, \"name\": \"RUB\", \"strCode\": \"643\"}, \"name\": \"Классный счет\", \"id\": \"300\"}], \"details\": {\"hasNext\": false}, \"resultCode\": \"OK\", \"trackingId\": \"AZAZA11\"}";
 
@@ -12,9 +10,7 @@ fn server() -> MockServer {
 }
 
 fn make_client(server: &MockServer) -> Client {
-    ClientBuilder::default()
-        .with_url(&server.base_url())
-        .build()
+    Client::new(&server.base_url())
 }
 
 #[rstest]

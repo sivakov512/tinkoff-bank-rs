@@ -1,6 +1,6 @@
 use httpmock::MockServer;
 use rstest::*;
-use tinkoff_bank::{Client, ClientBuilder, Nothing, ResponsePayload, ResultCode};
+use tinkoff_bank::{Client, Nothing, ResponsePayload, ResultCode};
 
 const RESPONSE: &str = "{\"payload\": {\"key\": \"key-example\"}, \"resultCode\": \"OK\", \"trackingId\": \"AZAZA11\"}";
 
@@ -10,9 +10,7 @@ fn server() -> MockServer {
 }
 
 fn make_client(server: &MockServer) -> Client {
-    ClientBuilder::default()
-        .with_url(&server.base_url())
-        .build()
+    Client::new(&server.base_url())
 }
 
 #[rstest]
