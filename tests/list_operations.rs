@@ -102,6 +102,7 @@ async fn returns_operations(response: &str, expected: Operation, server: MockSer
 
     let got = make_client(&server)
         .list_operations(
+            "ultra-device-id",
             "ultra-session-id",
             "100",
             dt("2009-02-13T23:31:30Z"),
@@ -123,11 +124,12 @@ async fn returns_operations(response: &str, expected: Operation, server: MockSer
 
 #[rstest]
 #[tokio::test]
-async fn passes_session_id_and_params(server: MockServer) {
+async fn passes_params(server: MockServer) {
     let mock = server.mock(|when, then| {
         when.method(httpmock::Method::POST)
             .path("/v1/operations")
             .query_param("sessionid", "ultra-session-id")
+            .query_param("deviceId", "ultra-device-id")
             .body("account=100&start=1234567890000&end=1234567990000");
         then.status(200)
             .header("Content-Type", "applucation/json")
@@ -136,6 +138,7 @@ async fn passes_session_id_and_params(server: MockServer) {
 
     make_client(&server)
         .list_operations(
+            "ultra-device-id",
             "ultra-session-id",
             "100",
             dt("2009-02-13T23:31:30Z"),

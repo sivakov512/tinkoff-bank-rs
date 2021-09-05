@@ -26,26 +26,35 @@ impl Client {
         }
     }
 
-    pub async fn ping(&self, session_id: &str) -> ResponsePayload<UserInfo> {
-        self.request("/v1/ping", &[("sessionid", session_id)], &[])
+    pub async fn ping(&self, device_id: &str, session_id: &str) -> ResponsePayload<UserInfo> {
+        self.request(
+            "/v1/ping",
+            &[("deviceId", device_id), ("sessionid", session_id)],
+            &[],
+        )
+        .await
+        .json()
+        .await
+        .unwrap()
+    }
+
+    pub async fn request_session(&self, device_id: &str) -> ResponsePayload<Session> {
+        self.request("/v1/auth/session", &[("deviceId", device_id)], &[])
             .await
             .json()
             .await
             .unwrap()
     }
 
-    pub async fn request_session(&self) -> ResponsePayload<Session> {
-        self.request("/v1/auth/session", &[], &[])
-            .await
-            .json()
-            .await
-            .unwrap()
-    }
-
-    pub async fn auth_by_phone(&self, session_id: &str, phone: &str) -> ResponsePayload<Nothing> {
+    pub async fn auth_by_phone(
+        &self,
+        device_id: &str,
+        session_id: &str,
+        phone: &str,
+    ) -> ResponsePayload<Nothing> {
         self.request(
             "/v1/auth/by/phone",
-            &[("sessionid", session_id)],
+            &[("deviceId", device_id), ("sessionid", session_id)],
             &[("phone", phone)],
         )
         .await
@@ -56,13 +65,14 @@ impl Client {
 
     pub async fn confirm_auth_by_phone(
         &self,
+        device_id: &str,
         session_id: &str,
         operation_ticket: &str,
         sms_code: &str,
     ) -> ResponsePayload<UserInfo> {
         self.request(
             "/v1/confirm",
-            &[("sessionid", session_id)],
+            &[("deviceId", device_id), ("sessionid", session_id)],
             &[
                 ("initialOperationTicket", operation_ticket),
                 ("initialOperation", "auth/by/phone"),
@@ -80,12 +90,13 @@ impl Client {
 
     pub async fn auth_by_password(
         &self,
+        device_id: &str,
         session_id: &str,
         password: &str,
     ) -> ResponsePayload<UserInfo> {
         self.request(
             "/v1/auth/by/password",
-            &[("sessionid", session_id)],
+            &[("deviceId", device_id), ("sessionid", session_id)],
             &[("password", password)],
         )
         .await
@@ -94,10 +105,15 @@ impl Client {
         .unwrap()
     }
 
-    pub async fn set_auth_pin(&self, session_id: &str, pin_hash: &str) -> ResponsePayload<Nothing> {
+    pub async fn set_auth_pin(
+        &self,
+        device_id: &str,
+        session_id: &str,
+        pin_hash: &str,
+    ) -> ResponsePayload<Nothing> {
         self.request(
             "/v1/auth/pin/set",
-            &[("sessionid", session_id)],
+            &[("deviceId", device_id), ("sessionid", session_id)],
             &[("pinHash", pin_hash)],
         )
         .await
@@ -108,13 +124,14 @@ impl Client {
 
     pub async fn auth_by_pin(
         &self,
+        device_id: &str,
         session_id: &str,
         pin_hash: &str,
         old_session_id: &str,
     ) -> ResponsePayload<UserInfo> {
         self.request(
             "/v1/auth/by/pin",
-            &[("sessionid", session_id)],
+            &[("deviceId", device_id), ("sessionid", session_id)],
             &[
                 ("pinHash", pin_hash),
                 ("oldSessionId", old_session_id),
@@ -127,16 +144,25 @@ impl Client {
         .unwrap()
     }
 
-    pub async fn list_accounts(&self, session_id: &str) -> ResponsePayload<Vec<Account>> {
-        self.request("/v1/accounts_flat", &[("sessionid", session_id)], &[])
-            .await
-            .json()
-            .await
-            .unwrap()
+    pub async fn list_accounts(
+        &self,
+        device_id: &str,
+        session_id: &str,
+    ) -> ResponsePayload<Vec<Account>> {
+        self.request(
+            "/v1/accounts_flat",
+            &[("deviceId", device_id), ("sessionid", session_id)],
+            &[],
+        )
+        .await
+        .json()
+        .await
+        .unwrap()
     }
 
     pub async fn list_operations(
         &self,
+        device_id: &str,
         session_id: &str,
         account_id: &str,
         start: DateTime<Utc>,
@@ -147,7 +173,7 @@ impl Client {
 
         self.request(
             "/v1/operations",
-            &[("sessionid", session_id)],
+            &[("deviceId", device_id), ("sessionid", session_id)],
             &[("account", account_id), ("start", &start), ("end", &end)],
         )
         .await
@@ -165,7 +191,6 @@ impl Client {
         self.client
             .post(&format!("{}{}", self.base_url, uri))
             .query(&DEFAULT_PARAMS)
-            .query(&[("deviceId", &self.device_id)])
             .query(query)
             .form(form)
             .send()
@@ -179,6 +204,8 @@ mod tests {
     use super::*;
     use httpmock::MockServer;
     use rstest::*;
+
+    const DEVICE_ID: &str = "sample-device_id";
 
     #[fixture]
     fn server() -> MockServer {
@@ -219,28 +246,7 @@ mod tests {
 
     #[rstest]
     #[tokio::test]
-    async fn request_passes_device_id_also(server: MockServer) {
-        let mock = server.mock(|when, then| {
-            when.method(httpmock::Method::POST)
-                .path("/example")
-                .query_param("appVersion", "5.5.1")
-                .query_param("connectionSubtype", "4G")
-                .query_param("appName", "mobile")
-                .query_param("origin", "mobile,ib5,loyalty,platform")
-                .query_param("connectionType", "Cellular")
-                .query_param("platform", "android")
-                .query_param("deviceId", "sample-device-id");
-            then.status(200);
-        });
-
-        make_client(&server).request("/example", &[], &[]).await;
-
-        mock.assert()
-    }
-
-    #[rstest]
-    #[tokio::test]
-    async fn request_passes_query_params_also_if_provided(server: MockServer) {
+    async fn request_passes_query_params_if_provided(server: MockServer) {
         let mock = server.mock(|when, then| {
             when.method(httpmock::Method::POST)
                 .path("/example")
@@ -265,7 +271,7 @@ mod tests {
 
     #[rstest]
     #[tokio::test]
-    async fn request_passes_form_also_if_provided(server: MockServer) {
+    async fn request_passes_also_if_provided(server: MockServer) {
         let mock = server.mock(|when, then| {
             when.method(httpmock::Method::POST)
                 .path("/example")

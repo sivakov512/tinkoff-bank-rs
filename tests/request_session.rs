@@ -25,7 +25,9 @@ async fn returns_session_details(server: MockServer) {
             .body(RESPONSE);
     });
 
-    let got = make_client(&server).request_session().await;
+    let got = make_client(&server)
+        .request_session("ultra-device-id")
+        .await;
 
     assert_eq!(
         got,
