@@ -1,6 +1,6 @@
 use httpmock::MockServer;
 use rstest::*;
-use tinkoff_bank_rs::{
+use tinkoff_bank::{
     Account, Client, ClientBuilder, Currency, MoneyAmount, ResponsePayload, ResultCode,
 };
 

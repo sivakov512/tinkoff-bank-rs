@@ -1,6 +1,6 @@
 use httpmock::MockServer;
 use rstest::*;
-use tinkoff_bank_rs::{Client, ClientBuilder, ResponsePayload, ResultCode};
+use tinkoff_bank::{Client, ClientBuilder, ResponsePayload, ResultCode};
 
 const RESPONSE: &str = "{\"confirmationData\": {\"SMSBYID\": {\"codeLength\": 4, \"codeType\": \"Numeric\", \"confirmationType\": \"SMSBYID\"}}, \"confirmations\": [\"SMSBYID\"], \"initialOperation\": \"auth/by/phone\", \"operationTicket\": \"operation-ticket-example\", \"resultCode\": \"WAITING_CONFIRMATION\", \"trackingId\": \"AZAZA11\"}";
 

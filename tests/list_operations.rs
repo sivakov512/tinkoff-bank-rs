@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use httpmock::MockServer;
 use rstest::*;
-use tinkoff_bank_rs::{
+use tinkoff_bank::{
     Client, ClientBuilder, Currency, MoneyAmount, Operation, OperationGroup, OperationType,
     ResponsePayload, ResultCode,
 };

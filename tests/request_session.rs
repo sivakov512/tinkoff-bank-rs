@@ -1,6 +1,6 @@
 use httpmock::MockServer;
 use rstest::*;
-use tinkoff_bank_rs::{Client, ClientBuilder, ResponsePayload, ResultCode, Session};
+use tinkoff_bank::{Client, ClientBuilder, ResponsePayload, ResultCode, Session};
 
 const RESPONSE: &str = "{\"payload\": {\"sessionid\": \"session-id-example\", \"ttl\": 9994}, \"resultCode\": \"OK\", \"trackingId\": \"AZAZA11\"}";
 

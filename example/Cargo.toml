@@ -8,6 +8,6 @@ edition = "2018"
 
 [dependencies]
 chrono = "0.4"
-tinkoff_bank_rs = { path = "../" }
+tinkoff-bank = { path = "../" }
 tokio = { version = "1", features = ["full"] }
 uuid = { version = "0.8", features = ["v4"] }

@@ -1,6 +1,6 @@
 use httpmock::MockServer;
 use rstest::*;
-use tinkoff_bank_rs::{AccessLevel, Client, ClientBuilder, ResponsePayload, ResultCode, UserInfo};
+use tinkoff_bank::{AccessLevel, Client, ClientBuilder, ResponsePayload, ResultCode, UserInfo};
 
 const RESPONSE: &str = "{\"payload\": {\"accessLevel\": \"CANDIDATE\", \"firstName\": \"Cool guy\", \"hasPassword\": true, \"key\": \"key-example\", \"noClient\": false, \"ssoId\": \"sso-id-example\", \"userId\": \"user-id-example\"}, \"resultCode\": \"OK\", \"trackingId\": \"AZAZA11\"}";
 

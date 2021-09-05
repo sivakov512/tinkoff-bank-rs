@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 use std::io;
-use tinkoff_bank_rs::ClientBuilder;
+use tinkoff_bank::ClientBuilder;
 use uuid::Uuid;
 
 #[tokio::main]

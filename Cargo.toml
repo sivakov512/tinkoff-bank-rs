@@ -1,5 +1,5 @@
 [package]
-name = "tinkoff_bank_rs"
+name = "tinkoff-bank"
 version = "0.1.0"
 authors = ["Nikita Sivakov <sivakov512@gmail.com>"]
 edition = "2018"
