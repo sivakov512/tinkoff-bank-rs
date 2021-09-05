@@ -1,6 +1,7 @@
 use crate::data_structs::*;
 use chrono::{DateTime, Utc};
 
+const API_URL: &str = "https://api.tinkoff.ru";
 const DEFAULT_PARAMS: [(&str, &str); 6] = [
     ("appVersion", "5.5.1"),
     ("connectionSubtype", "4G"),
@@ -13,15 +14,19 @@ const DEFAULT_PARAMS: [(&str, &str); 6] = [
 
 pub struct Client {
     pub(crate) base_url: String,
-    pub device_id: String,
     client: reqwest::Client,
 }
 
+impl Default for Client {
+    fn default() -> Self {
+        Self::new(API_URL)
+    }
+}
+
 impl Client {
-    pub fn new(base_url: String, device_id: String) -> Self {
+    pub fn new(base_url: &str) -> Self {
         Client {
-            base_url,
-            device_id,
+            base_url: base_url.to_owned(),
             client: reqwest::Client::new(),
         }
     }
@@ -213,15 +218,14 @@ mod tests {
     }
 
     fn make_client(server: &MockServer) -> Client {
-        Client::new(server.base_url(), "sample-device-id".to_owned())
+        Client::new(&server.base_url())
     }
 
     #[test]
     fn creates_client_with_specified_params() {
-        let client = Client::new("http://lol.kek".to_owned(), "lol-kek".to_owned());
+        let client = Client::new("http://lol.kek");
 
         assert_eq!(client.base_url, "http://lol.kek");
-        assert_eq!(client.device_id, "lol-kek");
     }
 
     #[rstest]

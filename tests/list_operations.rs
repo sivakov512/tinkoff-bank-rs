@@ -2,8 +2,8 @@ use chrono::{DateTime, Utc};
 use httpmock::MockServer;
 use rstest::*;
 use tinkoff_bank::{
-    Client, ClientBuilder, Currency, MoneyAmount, Operation, OperationGroup, OperationType,
-    ResponsePayload, ResultCode,
+    Client, Currency, MoneyAmount, Operation, OperationGroup, OperationType, ResponsePayload,
+    ResultCode,
 };
 
 #[fixture]
@@ -12,9 +12,7 @@ fn server() -> MockServer {
 }
 
 fn make_client(server: &MockServer) -> Client {
-    ClientBuilder::default()
-        .with_url(&server.base_url())
-        .build()
+    Client::new(&server.base_url())
 }
 
 fn dt(value: &str) -> DateTime<Utc> {

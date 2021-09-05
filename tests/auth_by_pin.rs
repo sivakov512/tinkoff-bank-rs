@@ -1,6 +1,6 @@
 use httpmock::MockServer;
 use rstest::*;
-use tinkoff_bank::{AccessLevel, Client, ClientBuilder, ResponsePayload, ResultCode, UserInfo};
+use tinkoff_bank::{AccessLevel, Client, ResponsePayload, ResultCode, UserInfo};
 
 const RESPONSE: &str = "{\"resultCode\": \"OK\", \"payload\": {\"key\": \"key-example\", \"deviceId\": \"ultra-device-id\", \"accessLevel\": \"CLIENT\", \"noClient\": false, \"ssoId\": \"sso-id-example\"}, \"trackingId\": \"AZAZA11\"}";
 
@@ -10,10 +10,7 @@ fn server() -> MockServer {
 }
 
 fn make_client(server: &MockServer) -> Client {
-    ClientBuilder::default()
-        .with_url(&server.base_url())
-        .with_device_id("ultra-device-id")
-        .build()
+    Client::new(&server.base_url())
 }
 
 #[rstest]
