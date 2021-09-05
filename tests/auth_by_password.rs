@@ -27,7 +27,7 @@ async fn returns_user_info(server: MockServer) {
     });
 
     let got = make_client(&server)
-        .auth_by_password("ultra-session-id", "ultra-password")
+        .auth_by_password("ultra-device-id", "ultra-session-id", "ultra-password")
         .await;
 
     assert_eq!(
@@ -47,11 +47,12 @@ async fn returns_user_info(server: MockServer) {
 
 #[rstest]
 #[tokio::test]
-async fn passes_session_id_and_params(server: MockServer) {
+async fn passes_params(server: MockServer) {
     let mock = server.mock(|when, then| {
         when.method(httpmock::Method::POST)
             .path("/v1/auth/by/password")
             .query_param("sessionid", "ultra-session-id")
+            .query_param("deviceId", "ultra-device-id")
             .body("password=ultra-password");
         then.status(200)
             .header("Content-Type", "applucation/json")
@@ -59,7 +60,7 @@ async fn passes_session_id_and_params(server: MockServer) {
     });
 
     make_client(&server)
-        .auth_by_password("ultra-session-id", "ultra-password")
+        .auth_by_password("ultra-device-id", "ultra-session-id", "ultra-password")
         .await;
 
     mock.assert()

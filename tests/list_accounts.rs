@@ -28,7 +28,9 @@ async fn returns_accounts(server: MockServer) {
             .body(RESPONSE);
     });
 
-    let got = make_client(&server).list_accounts("ultra-session-id").await;
+    let got = make_client(&server)
+        .list_accounts("ultra-device-id", "ultra-session-id")
+        .await;
 
     assert_eq!(
         got,
@@ -75,17 +77,20 @@ async fn returns_accounts(server: MockServer) {
 
 #[rstest]
 #[tokio::test]
-async fn passes_session_id(server: MockServer) {
+async fn passes_params(server: MockServer) {
     let mock = server.mock(|when, then| {
         when.method(httpmock::Method::POST)
             .path("/v1/accounts_flat")
-            .query_param("sessionid", "ultra-session-id");
+            .query_param("sessionid", "ultra-session-id")
+            .query_param("deviceId", "ultra-device-id");
         then.status(200)
             .header("Content-Type", "applucation/json")
             .body(RESPONSE);
     });
 
-    make_client(&server).list_accounts("ultra-session-id").await;
+    make_client(&server)
+        .list_accounts("ultra-device-id", "ultra-session-id")
+        .await;
 
     mock.assert()
 }

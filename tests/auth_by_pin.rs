@@ -27,7 +27,12 @@ async fn returns_user_info(server: MockServer) {
     });
 
     let got = make_client(&server)
-        .auth_by_pin("ultra-new-session-id", "ultra-hash", "ultra-old-session-id")
+        .auth_by_pin(
+            "ultra-device-id",
+            "ultra-new-session-id",
+            "ultra-hash",
+            "ultra-old-session-id",
+        )
         .await;
 
     assert_eq!(
@@ -47,11 +52,12 @@ async fn returns_user_info(server: MockServer) {
 
 #[rstest]
 #[tokio::test]
-async fn passes_session_id_and_params(server: MockServer) {
+async fn passes_params(server: MockServer) {
     let mock = server.mock(|when, then| {
         when.method(httpmock::Method::POST)
             .path("/v1/auth/by/pin")
             .query_param("sessionid", "ultra-new-session-id")
+            .query_param("deviceId", "ultra-device-id")
             .body("pinHash=ultra-hash&oldSessionId=ultra-old-session-id&auth_type=pin");
         then.status(200)
             .header("Content-Type", "applucation/json")
@@ -59,7 +65,12 @@ async fn passes_session_id_and_params(server: MockServer) {
     });
 
     make_client(&server)
-        .auth_by_pin("ultra-new-session-id", "ultra-hash", "ultra-old-session-id")
+        .auth_by_pin(
+            "ultra-device-id",
+            "ultra-new-session-id",
+            "ultra-hash",
+            "ultra-old-session-id",
+        )
         .await;
 
     mock.assert()

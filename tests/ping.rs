@@ -49,7 +49,9 @@ async fn returns_user_details(resp: &str, expected: UserInfo, server: MockServer
             .body(resp);
     });
 
-    let got = make_client(&server).ping("ultra-session-id").await;
+    let got = make_client(&server)
+        .ping("ultra-device-id", "ultra-session-id")
+        .await;
 
     assert_eq!(
         got,
@@ -65,17 +67,20 @@ async fn returns_user_details(resp: &str, expected: UserInfo, server: MockServer
 
 #[rstest]
 #[tokio::test]
-async fn passes_session_id_as_query(server: MockServer) {
+async fn passes_params(server: MockServer) {
     let mock = server.mock(|when, then| {
         when.method(httpmock::Method::POST)
             .path("/v1/ping")
-            .query_param("sessionid", "ultra-session-id");
+            .query_param("sessionid", "ultra-session-id")
+            .query_param("deviceId", "ultra-device-id");
         then.status(200)
             .header("Content-Type", "applucation/json")
             .body(CLIENT);
     });
 
-    make_client(&server).ping("ultra-session-id").await;
+    make_client(&server)
+        .ping("ultra-device-id", "ultra-session-id")
+        .await;
 
     mock.assert()
 }

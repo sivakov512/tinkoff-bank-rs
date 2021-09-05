@@ -26,7 +26,12 @@ async fn returns_user_info(server: MockServer) {
     });
 
     let got = make_client(&server)
-        .confirm_auth_by_phone("ultra-session-id", "ultra-operation-ticket", "1234")
+        .confirm_auth_by_phone(
+            "ultra-device-id",
+            "ultra-session-id",
+            "ultra-operation-ticket",
+            "1234",
+        )
         .await;
 
     assert_eq!(
@@ -46,11 +51,12 @@ async fn returns_user_info(server: MockServer) {
 
 #[rstest]
 #[tokio::test]
-async fn passes_session_id_and_params(server: MockServer) {
+async fn passes_params(server: MockServer) {
     let mock = server.mock(|when, then| {
         when.method(httpmock::Method::POST)
             .path("/v1/confirm")
             .query_param("sessionid", "ultra-session-id")
+            .query_param("deviceId", "ultra-device-id")
             .body("initialOperationTicket=ultra-operation-ticket&initialOperation=auth%2Fby%2Fphone&confirmationData=%7B%22SMSBYID%22%3A%221234%22%7D");
         then.status(200)
             .header("Content-Type", "applucation/json")
@@ -58,7 +64,12 @@ async fn passes_session_id_and_params(server: MockServer) {
     });
 
     make_client(&server)
-        .confirm_auth_by_phone("ultra-session-id", "ultra-operation-ticket", "1234")
+        .confirm_auth_by_phone(
+            "ultra-device-id",
+            "ultra-session-id",
+            "ultra-operation-ticket",
+            "1234",
+        )
         .await;
 
     mock.assert()
