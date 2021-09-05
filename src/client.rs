@@ -210,8 +210,6 @@ mod tests {
     use httpmock::MockServer;
     use rstest::*;
 
-    const DEVICE_ID: &str = "sample-device_id";
-
     #[fixture]
     fn server() -> MockServer {
         MockServer::start()
