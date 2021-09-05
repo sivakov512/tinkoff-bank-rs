@@ -1,6 +1,10 @@
 name: ci
 
-on: [push]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -12,9 +16,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - id: get-date
-      run: echo "::set-output name=date::$(/bin/date -u "+%Y%W")"
-      shell: bash
+    - uses: actions-rs/toolchain@v1
+      id: toolchain
+      with:
+        override: true
+        profile: minimal
+        toolchain: stable
 
     - uses: actions/cache@v2
       with:
@@ -22,10 +29,14 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: ${{ github.ref }}-${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
-        restore-keys: refs/heads/master-${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
+        key: ${{ github.ref }}-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
+        restore-keys: refs/heads/master-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
 
-    - run: cargo test --verbose
+    - name: cargo test --vervose
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --verbose
 
   lint:
     runs-on: ubuntu-latest
@@ -33,9 +44,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - id: get-date
-      run: echo "::set-output name=date::$(/bin/date -u "+%Y%W")"
-      shell: bash
+    - uses: actions-rs/toolchain@v1
+      id: toolchain
+      with:
+        components: rustfmt, clippy
+        override: true
+        profile: minimal
+        toolchain: stable
 
     - uses: actions/cache@v2
       with:
@@ -43,9 +58,17 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: ${{ github.ref }}-${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
-        restore-keys: refs/heads/master-${{ github.workflow }}-${{ github.job }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.toml') }}
+        key: ${{ github.ref }}-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
+        restore-keys: refs/heads/master-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
 
-    - run: cargo fmt --all -- --check
+    - name: cargo fmt --all -- --check
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
 
-    - run: cargo clippy -- -D warnings
+    - name: cargo clippy -- -D warnings
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+        args: -- -D warnings
