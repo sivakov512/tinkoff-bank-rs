@@ -12,6 +12,7 @@ const DEFAULT_PARAMS: [(&str, &str); 6] = [
     // pass device id too
 ];
 
+#[derive(Clone)]
 pub struct Client {
     pub(crate) base_url: String,
     client: reqwest::Client,
