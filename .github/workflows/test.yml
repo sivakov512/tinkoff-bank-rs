@@ -1,4 +1,4 @@
-name: ci
+name: test
 
 on:
   push:
@@ -32,13 +32,13 @@ jobs:
         key: ${{ github.ref }}-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
         restore-keys: refs/heads/master-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
 
-    - name: cargo test --vervose
+    - name: Test
       uses: actions-rs/cargo@v1
       with:
         command: test
         args: --verbose
 
-  lint:
+  check-formatting:
     runs-on: ubuntu-latest
 
     steps:
@@ -47,7 +47,7 @@ jobs:
     - uses: actions-rs/toolchain@v1
       id: toolchain
       with:
-        components: rustfmt, clippy
+        components: rustfmt
         override: true
         profile: minimal
         toolchain: stable
@@ -61,13 +61,36 @@ jobs:
         key: ${{ github.ref }}-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
         restore-keys: refs/heads/master-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
 
-    - name: cargo fmt --all -- --check
+    - name: Check formatting
       uses: actions-rs/cargo@v1
       with:
         command: fmt
         args: --all -- --check
 
-    - name: cargo clippy -- -D warnings
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions-rs/toolchain@v1
+      id: toolchain
+      with:
+        components: clippy
+        override: true
+        profile: minimal
+        toolchain: stable
+
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ github.ref }}-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
+        restore-keys: refs/heads/master-${{ github.workflow }}-${{ github.job }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('Cargo.toml') }}
+
+    - name: Lint
       uses: actions-rs/cargo@v1
       with:
         command: clippy
