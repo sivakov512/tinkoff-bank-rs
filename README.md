@@ -4,7 +4,7 @@ Some parts of API used by Tinkoff mobile app.
 
 Implementation is very rough, so PRs and issues are welcome.
 
-[![Downloads](https://img.shields.io/crates/d/tinkoff-bank.svg)](https://crates.io/crates/tinkoff-bank)
+[![Crates](https://img.shields.io/crates/v/tinkoff-bank)](https://crates.io/crates/tinkoff-bank)
 [![API Docs](https://docs.rs/tinkoff-bank/badge.svg)](https://docs.rs/tinkoff-bank)
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
