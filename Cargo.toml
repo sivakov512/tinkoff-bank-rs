@@ -15,6 +15,6 @@ tokio = { version = "1", features = ["full"] }
 uuid = { version = "0.8", features = ["v4"] }
 
 [dev-dependencies]
-async-std = { version = "1.5", features = ["attributes"] }
-httpmock = "0.5"
-rstest = "0.6"
+async-std = { version = "1.10", features = ["attributes"] }
+httpmock = "0.6"
+rstest = "0.11"
