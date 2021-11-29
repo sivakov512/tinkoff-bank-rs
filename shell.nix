@@ -1,12 +1,13 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-    unstable = import (builtins.fetchTarball https://nixos.org/channels/nixos-unstable/nixexprs.tar.xz) {};
+  stable = import (builtins.fetchTarball https://nixos.org/channels/nixos-21.05/nixexprs.tar.xz) {};
+  unstable = import (builtins.fetchTarball https://nixos.org/channels/nixos-unstable/nixexprs.tar.xz) {};
 in
 
-pkgs.mkShell {
-  buildInputs = with pkgs; [
-    # needed to compile openssl-sys crate
+stable.mkShell {
+  buildInputs = with stable; [
+    # required openssl-sys crate
     pkg-config
     openssl
   ] ++ (with unstable; [
