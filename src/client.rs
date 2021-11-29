@@ -24,7 +24,13 @@ impl Default for Client {
     }
 }
 
+/// Client for Tinkoff bank API that is used by their mobile app.
+///
+/// In most cases you don't need to use `::new` method, so instantiate client with `::default`.
 impl Client {
+    /// Creates new `Client` with specified API url.
+
+    /// Useful only for testing or working through proxy (maybe).
     pub fn new(base_url: &str) -> Self {
         Client {
             base_url: base_url.to_owned(),
@@ -32,6 +38,7 @@ impl Client {
         }
     }
 
+    /// Ping bank API for details about specified session and device id.
     pub async fn ping(&self, device_id: &str, session_id: &str) -> ResponsePayload<UserInfo> {
         self.request(
             "/v1/ping",
@@ -44,6 +51,10 @@ impl Client {
         .unwrap()
     }
 
+    /// Ask bank API for new session.
+    ///
+    /// This method is a first call in any new interaction with bank API, so you should pregenrate
+    /// device id and keep it.
     pub async fn request_session(&self, device_id: &str) -> ResponsePayload<Session> {
         self.request("/v1/auth/session", &[("deviceId", device_id)], &[])
             .await
@@ -52,6 +63,10 @@ impl Client {
             .unwrap()
     }
 
+    /// Start auth by phone.
+    ///
+    /// If successful case API returns operation ticket and user will get SMS code. All this
+    /// details are needed to confirm auth in future.
     pub async fn auth_by_phone(
         &self,
         device_id: &str,
@@ -69,6 +84,9 @@ impl Client {
         .unwrap()
     }
 
+    /// Complete auth by phone.
+    ///
+    /// Returns details on current session.
     pub async fn confirm_auth_by_phone(
         &self,
         device_id: &str,
@@ -94,6 +112,10 @@ impl Client {
         .unwrap()
     }
 
+    /// Auth by password.
+    ///
+    /// You can't skip this step if you want to get full access to API. So, before calling this
+    /// method you should complete auth by phone.
     pub async fn auth_by_password(
         &self,
         device_id: &str,
@@ -111,6 +133,10 @@ impl Client {
         .unwrap()
     }
 
+    /// Set auth pin like a mobile app does it with pin and fingerprint.
+    ///
+    /// Just generate pin hash and remember its value forever. In future you can use this hash to
+    /// auth faster.
     pub async fn set_auth_pin(
         &self,
         device_id: &str,
@@ -128,6 +154,11 @@ impl Client {
         .unwrap()
     }
 
+    /// Auth by pin like a mobile app does it with pin and fingerprint.
+    ///
+    /// To use you should know your previous (maybe outdated) session id. Request new session and
+    /// provider both sessions (old and new) with pin hash, now new session has full access like
+    /// old session previously.
     pub async fn auth_by_pin(
         &self,
         device_id: &str,
@@ -150,6 +181,9 @@ impl Client {
         .unwrap()
     }
 
+    /// List all bank accounts as flat list.
+    ///
+    /// Note that this method won't return any accounts from investing.
     pub async fn list_accounts(
         &self,
         device_id: &str,
@@ -166,6 +200,10 @@ impl Client {
         .unwrap()
     }
 
+    /// List operations for specified account id.
+    ///
+    /// Provide 'internal' account id, not account number! Real API doesn't require two dates for
+    /// filtering, but I will.
     pub async fn list_operations(
         &self,
         device_id: &str,
